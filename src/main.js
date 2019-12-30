@@ -8,6 +8,10 @@ import * as d3 from 'd3'
 Vue.config.productionTip = false
 Vue.prototype.$d3 = d3
 
+module.exports = {
+  chainWebpack: config => config.resolve.symlinks(false)
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

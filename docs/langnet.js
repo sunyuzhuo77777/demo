@@ -61,7 +61,7 @@ function drawNetwork() {
 
 	buildNetwork();
 
-	$("#hint").html("Move the mouse over any language to show further information or click to grab the bubble around.");
+	$("#hint").html("Move the mouse over any bot to show further information or click to grab the bubble around.");
 
 	networkChart.vis = d3.select("#graphHolder").append("svg:svg").attr("id", "graph").attr("width", w).attr("height", h);
 
@@ -388,8 +388,8 @@ function getAmountLinks(n) {
 	return linksAmount;
 }
 
-function showInformation(language) {
-	var url = "http://en.wikipedia.org/wiki/"+language+"_language";
-	var n = nodesHash[language];
-	$('#language_information').html(nodesArray[n].desc);
+function showInformation(user) {
+	var url = "http://10.8.2.243:3000/users/"+user+"/overview";
+	var n = nodesHash[user];
+	$('#user_information').html(nodesArray[n].desc);
 }
