@@ -389,7 +389,7 @@ function getAmountLinks(n) {
 }
 
 function showInformation(user) {
-	var url = "http://10.8.2.243:3000/users/"+user+"/overview";
+	var url = "http://10.8.2.243:3000/users/user_"+user+"/overview";
 	var n = nodesHash[user];
 	$('#user_information').html(nodesArray[n].desc);
 }
