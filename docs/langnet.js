@@ -23,6 +23,12 @@ var similarityThresholdMin = 100;
 var similarityThresholdMax = 0;
 var similarityThreshold = 50;
 
+var linksAmountThresholdMin = 0;
+var linksAmountThresholdMax = 0;
+var linksAmountThreshold = 50;
+
+
+
 function restart() {
 
 	if( d3.select("#graph") != null ) {
@@ -32,6 +38,7 @@ function restart() {
 	h = $('#graphHolder').height();
 
 	$('#similarity').html(Math.round(similarityThreshold)+"%");
+	$('#linksAmount').html(Math.round(linksAmountThreshold)+"%");
 
 	// clear network, if available
 	if( networkChart.force != null ) {	networkChart.force.stop();	}
@@ -61,7 +68,7 @@ function drawNetwork() {
 
 	buildNetwork();
 
-	$("#hint").html("Move the mouse over any bot to show further information or click to grab the bubble around.");
+	$("#hint").html("鼠标悬停、点击或拖动任一用户，可查其相似用户及相似性。");
 
 	networkChart.vis = d3.select("#graphHolder").append("svg:svg").attr("id", "graph").attr("width", w).attr("height", h);
 
@@ -69,7 +76,7 @@ function drawNetwork() {
 	.nodes(networkChart.nodes).links(networkChart.links)
 	.gravity(1).linkDistance(100).charge(-3000)
 	.linkStrength(function(x) {
-		return x.weight * 10
+		return x.weight * 10 //这里调整线宽：正比于相似度
 	});
 	networkChart.force.start();
 
@@ -93,7 +100,7 @@ function drawNetwork() {
 	.style("stroke", "#FFF").style("stroke-width", 2);
 	node.call(networkChart.force.drag);
 	node.on("mouseover", function(d) {
-		showInformation(d.label);
+		showInformation(d.id);
 	});
 
 	var anchorLink = networkChart.vis.selectAll("line.anchorLink")
@@ -113,7 +120,7 @@ function drawNetwork() {
 	.style("font-family", "Arial")
 	.style("font-size", 10)
 	.on("mouseover", function(d) {
-		showInformation(d.node.label);
+		showInformation(d.node.id);
 	});
 
 	var updateLink = function() {
@@ -277,7 +284,7 @@ function drawChord() {
 
 	buildChord();
 
-	$("#hint").html("Move the mouse over any language to hide all others.");
+	$("#hint").html("鼠标悬浮在任一用户上可查看其相关用户及相似性。");
 
 	// Chart dimensions.
 	var r1 = Math.min(w, h) / 2 - 4;
@@ -346,7 +353,7 @@ function drawChord() {
 	/** Returns an event handler for fading a given chord group. */
 	function fade(opacity) {
 		return function(g, i) {
-			showInformation(nodesArray[i].label);
+			showInformation(nodesArray[i].id);
 			svg.selectAll("path.chord")
 			.filter(function(d) {
 				return d.source.index != i && d.target.index != i;
@@ -372,12 +379,17 @@ function filterChange(event, ui) {
 	restart();
 }
 
+function filterChange2(event, ui) {
+	linksAmountThreshold = ui.value;
+	restart();
+}
+
 function chartChange(value) {
 	chart = value;
 	restart();
 }
 
-function getAmountLinks(n) {
+function getAmountLinks(n) { //这里获取在图上显示的一个点周围连接线的个数
 	var linksAmount = 0;
 	for(var j=0; j<linksArray.length; j++) {
 		var link = linksArray[j];
@@ -388,8 +400,8 @@ function getAmountLinks(n) {
 	return linksAmount;
 }
 
-function showInformation(user) {
-	var url = "http://10.8.2.243:3000/users/user_"+user+"/overview";
-	var n = nodesHash[user];
-	$('#user_information').html(nodesArray[n].desc);
+function showInformation(userid) {
+//	var url = "http://10.8.2.243:3000/users/user_"+user+"/overview";
+//	var n = nodesHash.user;
+	$('#user_information').html(nodesArray[userid].desc);
 }
