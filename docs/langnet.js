@@ -38,7 +38,7 @@ function restart() {
 	h = $('#graphHolder').height();
 
 	$('#similarity').html(Math.round(similarityThreshold)+"%");
-	$('#linksAmount').html(Math.round(linksAmountThreshold)+"%");
+	$('#linksAmount').html(Math.round(linksAmountThreshold));
 
 	// clear network, if available
 	if( networkChart.force != null ) {	networkChart.force.stop();	}
