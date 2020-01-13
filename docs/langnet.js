@@ -21,7 +21,7 @@ var chordChart = {
 var hideUnrelated = false;
 var similarityThresholdMin = 100;
 var similarityThresholdMax = 0;
-var similarityThreshold = 95;
+var similarityThreshold = 50;
 
 var linksAmountThresholdMin = 0;
 var linksAmountThresholdMax = 0;
