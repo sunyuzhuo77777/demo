@@ -19,11 +19,11 @@ var chordChart = {
 		data : []
 };
 var hideUnrelated = false;
-var similarityThresholdMin = 100;
+var similarityThresholdMin = 5;
 var similarityThresholdMax = 0;
 var similarityThreshold = 5;
 
-var grpThresholdMin = 0;
+var grpThresholdMin = 1;
 var grpThresholdMax = 0;
 var grpThreshold = 1;
 
