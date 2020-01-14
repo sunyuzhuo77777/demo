@@ -33,7 +33,7 @@
 		</div>
 		<br/>
 		<div id="sliderContainer">
-			根据团伙成员数过滤: <span id="linksAmount"></span>
+			根据团伙成员数过滤: <span id="grp"></span>
 			<div id="slider2"></div>
 		</div>
 		<p id="hint"></p>
@@ -49,6 +49,9 @@
 		<p>如想了解更多欢迎点击下方，访问官网。</p>
 
 		<p><a class="boton" href="http://www.riversecurity.com.cn" target="_blank">&copy; riversecurity</a> </p>
+		
+	</div>
+	<div id="group_information">
 		
 	</div>
 
@@ -69,7 +72,8 @@
 			});
 			restart();
 			$("#slider").slider({ change: filterChange, min: similarityThresholdMin, max: similarityThresholdMax, value: similarityThreshold });
-			$("#slider2").slider({ change: filterChange2, min: similarityThresholdMin, max: similarityThresholdMax, value: linksAmountThreshold  });
+			$("#slider2").slider({ change: filterChange2, min: grpThresholdMin, max: grpThresholdMax, value: grpThreshold });
+			$("#showGroup")
 		});
 	</script>
 	</body>

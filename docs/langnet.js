@@ -21,11 +21,11 @@ var chordChart = {
 var hideUnrelated = false;
 var similarityThresholdMin = 100;
 var similarityThresholdMax = 0;
-var similarityThreshold = 50;
+var similarityThreshold = 5;
 
-var linksAmountThresholdMin = 0;
-var linksAmountThresholdMax = 0;
-var linksAmountThreshold = 50;
+var grpThresholdMin = 0;
+var grpThresholdMax = 0;
+var grpThreshold = 1;
 
 
 
@@ -38,7 +38,7 @@ function restart() {
 	h = $('#graphHolder').height();
 
 	$('#similarity').html(Math.round(similarityThreshold)+"%");
-	$('#linksAmount').html(Math.round(linksAmountThreshold));
+	$('#grp').html(Math.round(grpThreshold));
 
 	// clear network, if available
 	if( networkChart.force != null ) {	networkChart.force.stop();	}
@@ -101,7 +101,12 @@ function drawNetwork() {
 	node.call(networkChart.force.drag);
 	node.on("mouseover", function(d) {
 		showInformation(d.id);
-	});
+	})
+	node.on("click", function(d) {
+		showGroup(d.id);
+	})
+	
+	;
 
 	var anchorLink = networkChart.vis.selectAll("line.anchorLink")
 	.data(networkChart.labelAnchorLinks);
@@ -180,12 +185,17 @@ function buildNetwork() {
 				draw = false;
 			}
 		}
+		var grp = getGroup(i);
+		if(grp<grpThreshold){
+			draw = false;
+		}
 		if( draw ) {
 			newMapping[i] = k;
 			networkChart.nodes.push(node);
 			networkChart.labelAnchors.push({ node : node });
-			networkChart.labelAnchors.push({ node : node	});
+			networkChart.labelAnchors.push({ node : node });
 			k++;
+			adjustSlider2(grp);
 		} else {
 			newMapping[i] = -1;
 		}
@@ -216,6 +226,13 @@ function adjustSlider(sim) {
 		similarityThresholdMax = sim*100; 
 	} else if( sim*100 < similarityThresholdMin ) {
 		similarityThresholdMin = sim*100;
+	}
+}
+function adjustSlider2(grp) {
+	if( grp > grpThresholdMax ) {
+		grpThresholdMax = grp; 
+	} else if( grp < similarityThresholdMin ) {
+		grpThresholdMin = grp;
 	}
 }
 
@@ -380,7 +397,7 @@ function filterChange(event, ui) {
 }
 
 function filterChange2(event, ui) {
-	linksAmountThreshold = ui.value;
+	grpThreshold = ui.value;
 	restart();
 }
 
@@ -400,8 +417,35 @@ function getAmountLinks(n) { //这里获取在图上显示的一个点周围连�
 	return linksAmount;
 }
 
+function getGroup(n){
+	var grp = [n];
+	var pointer = 0;
+	while(pointer != grp.length){	
+		for(j=0;j<linksArray.length;j++){
+			if(linksArray[j].source==grp[pointer]){
+				if(grp.indexOf(linksArray[j].target )==-1 && linksArray[j].weight>= similarityThreshold/100){
+					grp=grp.concat(linksArray[j].target);
+				}	
+			}
+			if(linksArray[j].target==grp[pointer]){
+				if(grp.indexOf(linksArray[j].source )==-1 && linksArray[j].weight>= similarityThreshold/100){
+					grp=grp.concat(linksArray[j].source);
+				}
+			}
+			
+		}
+		pointer=pointer+1;
+	}
+	return grp.length;
+}
+
+
 function showInformation(userid) {
 //	var url = "http://10.8.2.243:3000/users/user_"+user+"/overview";
 //	var n = nodesHash.user;
 	$('#user_information').html(nodesArray[userid].desc);
+}
+
+function showGroup(userid) {
+	$('#group_information').html(nodesArray[userid].size);
 }
