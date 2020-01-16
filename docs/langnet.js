@@ -76,7 +76,7 @@ function drawNetwork() {
 	.nodes(networkChart.nodes).links(networkChart.links)
 	.gravity(1).linkDistance(100).charge(-3000)
 	.linkStrength(function(x) {
-		return x.weight * 10 //这里调整线宽：正比于相似度
+		return x.weight * 5 //这里调整线宽：正比于相似度
 	});
 	networkChart.force.start();
 
@@ -89,7 +89,7 @@ function drawNetwork() {
 	var link = networkChart.vis.selectAll("line.link")
 	.data(networkChart.links).enter()
 	.append("svg:line").attr("class", "link")
-	.style("stroke", function(d, i) { return d.color });
+	.style("stroke", function(d, i) { return d.color }).style("stroke-width",  function(d, i) { return 0.5 + 2 * d.weight });//线宽正比于相似度
 
 	var node = networkChart.vis.selectAll("g.node")
 	.data(networkChart.force.nodes()).enter()
