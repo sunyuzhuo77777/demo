@@ -97,7 +97,13 @@ function drawNetwork() {
 	node.append("svg:circle").attr("id",function(d, i) { return "c_"+d.label })
 	.attr("r", function(d, i) { return d.size })
 	.style("fill", function(d, i) { return d.color })
-	.style("stroke", "#FFF").style("stroke-width", 2);
+	.style("stroke", "#FFF").style("stroke-width", 2)
+	.on("mouseover", function(d) {
+		d3.select(this).transition().duration(500).attr("r", function(d, i) { return d.size*1.5 });
+	})
+	.on("mouseout", function(d) {
+		d3.select(this).transition().duration(500).attr("r", function(d, i) { return d.size });
+	});
 	node.call(networkChart.force.drag);
 	node.on("mouseover", function(d) {
 		showInformation(d.id);
