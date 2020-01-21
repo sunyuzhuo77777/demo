@@ -28,7 +28,6 @@ var grpThresholdMax = 0;
 var grpThreshold = 1;
 
 
-
 function restart() {
 
 	if( d3.select("#graph") != null ) {
@@ -68,15 +67,15 @@ function drawNetwork() {
 
 	buildNetwork();
 
-	$("#hint").html("鼠标悬停、点击或拖动任一用户，可查其相似用户及相似性。");
+	$("#hint").html("鼠标悬停或拖动任一用户，可查其相似用户及相似度；鼠标点击任一用户，可查看其群组详情。");
 
 	networkChart.vis = d3.select("#graphHolder").append("svg:svg").attr("id", "graph").attr("width", w).attr("height", h);
 
 	networkChart.force = d3.layout.force().size([w, h])
 	.nodes(networkChart.nodes).links(networkChart.links)
-	.gravity(1).linkDistance(100).charge(-3000)
+	.gravity(1).linkDistance(100).charge(-3000)//gravity引力 linkDistance线长 charge斥力
 	.linkStrength(function(x) {
-		return x.weight * 5 //这里调整线宽：正比于相似度
+		return x.weight * 10 //调整引力强度：正比于相似度
 	});
 	networkChart.force.start();
 
@@ -89,7 +88,29 @@ function drawNetwork() {
 	var link = networkChart.vis.selectAll("line.link")
 	.data(networkChart.links).enter()
 	.append("svg:line").attr("class", "link")
-	.style("stroke", function(d, i) { return d.color }).style("stroke-width",  function(d, i) { return 0.5 + 2 * d.weight });//线宽正比于相似度
+	.style("stroke", function(d, i) { return d.color })
+	.style("stroke-width",  function(d, i) { return 1 + 2.5 * (d.weight -similarityThreshold/100)/(1-similarityThreshold/100)});//线宽正比于相似度
+
+	var myTool = d3.select("body")
+	.append("div")
+	.attr("class", "mytooltip")
+	.style("opacity", "0")
+	.style("display", "none")
+	.on("mouseover", function(d){  //Mouse event;
+		myTool
+		.transition()  //Opacity transition when the tooltip appears
+		.duration(500)
+		.style("opacity", "1")                           
+		.style("display", "block")
+
+	  })
+	  .on("mouseout", function(d){
+		myTool
+		.transition()  //Opacity transition when the tooltip disappears
+		.duration(5000)
+		.style("opacity", "0")            
+		.style("display", "none")  //The tooltip disappears
+	  });
 
 	var node = networkChart.vis.selectAll("g.node")
 	.data(networkChart.force.nodes()).enter()
@@ -99,20 +120,28 @@ function drawNetwork() {
 	.style("fill", function(d, i) { return d.color })
 	.style("stroke", "#FFF").style("stroke-width", 2)
 	.on("mouseover", function(d) {
-		d3.select(this).transition().duration(500).attr("r", function(d, i) { return d.size*1.5 });
+		d3.select(this).transition().duration(200).style("cursor", "pointer").attr("r", function(d, i) { return d.size*1.5 });
 	})
 	.on("mouseout", function(d) {
-		d3.select(this).transition().duration(500).attr("r", function(d, i) { return d.size });
+		d3.select(this).transition().duration(200).style("cursor", "normal").attr("r", function(d, i) { return d.size });
+	})
+	.on("click",function(d){
+		myTool
+		.transition()  //Opacity transition when the tooltip appears
+		.duration(500)
+		.style("opacity", "1")                           
+		.style("display", "block")
+		myTool
+		.html('<span>' + d.label + '所属群组行为序列（时间粒度1小时）</span>'+'<svg>'+grpDots(d.id)+'</svg>')
+		//.html('<span>' + d.label + getGroup(d.id) + '</span>'+'<svg ><g><circle class="svg2" cx="10" cy="10" r="1"></circle></g><g><circle class="svg2" cx="13" cy="10" r="1"></circle></g></svg>')
+		.style("left", (d3.event.pageX - 113) + "px")   
+		.style("top", (d3.event.pageY -60) + "px");  //The tooltip appears
 	});
+	
 	node.call(networkChart.force.drag);
 	node.on("mouseover", function(d) {
 		showInformation(d.id);
-	})
-	node.on("click", function(d) {
-		showGroup(d.id);
-	})
-	
-	;
+	});
 
 	var anchorLink = networkChart.vis.selectAll("line.anchorLink")
 	.data(networkChart.labelAnchorLinks);
@@ -179,6 +208,33 @@ function drawNetwork() {
 
 }
 
+function mincx(n){
+	var minx = nodesArray[0].time[0];
+	var tmp=getGroup(n);
+	for(k=0;k<tmp.length;k++){
+		var ttmp=tmp[k];
+	  	for(l=0;l<nodesArray[ttmp].time.length;l++){
+			if(minx>nodesArray[ttmp].time[l]){
+		  	minx=nodesArray[ttmp].time[l];
+			}
+	  	}
+	}
+	return minx
+}
+
+
+function grpDots(n){
+	var dots='';
+	var tmp=getGroup(n);
+  	for(i=0;i<tmp.length;i++){
+		var ttmp = tmp[i];
+    	for(m=0;m<nodesArray[ttmp].time.length;m++){
+      		dots=dots+'<g><text x="100" y="'+15*(i+1)+'" fill="black" font-size="8pt" style="text-anchor: end">'+nodesArray[ttmp].label+':</text><circle  cx="'+ (nodesArray[ttmp].time[m]-mincx(n)+26)*4 +'" cy="'+15*(i+1)+'" r="1"></circle></g>';
+    	}
+  	}
+  	return dots;
+}
+
 function buildNetwork() {
 
 	var newMapping = [];
@@ -192,7 +248,8 @@ function buildNetwork() {
 			}
 		}
 		var grp = getGroup(i);
-		if(grp<grpThreshold){
+		//adjustSlider2(grp.length);
+		if(grp.length<grpThreshold){
 			draw = false;
 		}
 		if( draw ) {
@@ -201,7 +258,7 @@ function buildNetwork() {
 			networkChart.labelAnchors.push({ node : node });
 			networkChart.labelAnchors.push({ node : node });
 			k++;
-			adjustSlider2(grp);
+			adjustSlider2(grp.length);
 		} else {
 			newMapping[i] = -1;
 		}
@@ -237,7 +294,7 @@ function adjustSlider(sim) {
 function adjustSlider2(grp) {
 	if( grp > grpThresholdMax ) {
 		grpThresholdMax = grp; 
-	} else if( grp < similarityThresholdMin ) {
+	} else if( grp < grpThresholdMin ) {
 		grpThresholdMin = grp;
 	}
 }
@@ -442,7 +499,7 @@ function getGroup(n){
 		}
 		pointer=pointer+1;
 	}
-	return grp.length;
+	return grp;
 }
 
 
