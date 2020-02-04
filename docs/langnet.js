@@ -132,7 +132,7 @@ function drawNetwork() {
 		.style("opacity", "1")                           
 		.style("display", "block")
 		myTool
-		.html('<span>' + d.label + '所属群组行为序列（时间粒度1小时）</span>'+'<svg>'+grpDots(d.id)+'</svg>')
+		.html('<span>' + d.label +'所属群组行为序列（时间粒度1小时）</span>'+'<svg>'+grpDots(d.id)+'</svg>')
 		//.html('<span>' + d.label + getGroup(d.id) + '</span>'+'<svg ><g><circle class="svg2" cx="10" cy="10" r="1"></circle></g><g><circle class="svg2" cx="13" cy="10" r="1"></circle></g></svg>')
 		.style("left", (d3.event.pageX - 113) + "px")   
 		.style("top", (d3.event.pageY -60) + "px");  //The tooltip appears
@@ -229,7 +229,7 @@ function grpDots(n){
   	for(i=0;i<tmp.length;i++){
 		var ttmp = tmp[i];
     	for(m=0;m<nodesArray[ttmp].time.length;m++){
-      		dots=dots+'<g><text x="100" y="'+15*(i+1)+'" fill="black" font-size="8pt" style="text-anchor: end">'+nodesArray[ttmp].label+':</text><circle  cx="'+ (nodesArray[ttmp].time[m]-mincx(n)+26)*4 +'" cy="'+15*(i+1)+'" r="1"></circle></g>';
+      		dots=dots+'<g><text x="100" y="'+15*(i+1)+'" fill="#424858" font-family=" Georgia, serif" font-size="8pt" style="text-anchor: end">'+nodesArray[ttmp].label+':</text><circle fill="#262F52" cx="'+ (nodesArray[ttmp].time[m]-mincx(n)+26)*4 +'" cy="'+15*(i+1)+'" r="1"></circle></g>';
     	}
   	}
   	return dots;

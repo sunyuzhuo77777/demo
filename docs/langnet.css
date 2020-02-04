@@ -218,12 +218,13 @@ path.chord {
 	text-align: center;
 	width: 600px;
 	height:280px;
-	background-color: #EDE3D1;
+	background-color: rgba(232, 234, 248, 0.8);
 	border-radius: 10px;
-	color: #787777;
+	color: #424858;
 	padding: 6px 12px;
 	z-index:3;
 	overflow: auto;
+	font-family: Georgia, serif;
   }
   
   .mytooltip:after {
