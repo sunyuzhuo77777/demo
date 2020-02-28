@@ -67,7 +67,7 @@ function drawNetwork() {
 
 	buildNetwork();
 
-	$("#hint").html("鼠标悬停或拖动任一用户，可查其相似用户及相似度；鼠标点击任一用户，可查看其群组详情。");
+	$("#hint").html("鼠标悬停或拖动任一用户，可查其相似用户及相似度；鼠标点击任一用户，可查看其群组详情。<br><br>圆大小正比于用户活跃度，线宽正比于两用户间相似度。");
 
 	networkChart.vis = d3.select("#graphHolder").append("svg:svg").attr("id", "graph").attr("width", w).attr("height", h);
 
